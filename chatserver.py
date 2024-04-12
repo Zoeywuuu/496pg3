@@ -27,15 +27,13 @@ Args:
 Returns:
     None
 """
-def chatroom(sock, list):
+def chatroom(sock, lst):
     print("in chatroom")
     # Task1: login/register the user
-    online = []
     username = user_name(newsock)
     if username:
         newsock.send("Successfully login!".encode())
-        online.append(username)
-        print(online)
+        lst[username] = sock
 
     # Task2: use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
@@ -43,36 +41,37 @@ def chatroom(sock, list):
         operation = sock.recv(4).decode()
         print(f'Operation received: {operation}.')
         if operation == 'EX':
+            lst.pop(username)
             print('Closing the thread...')
             newsock.close()
             break
         elif operation == 'BM':
-            broadcast(sock, username)
+            broadcast(sock, username, lst)
             continue
         elif operation == 'PM':
-            private(sock, username)
+            private(sock, username, lst)
             continue
         else:
             print('Wrong operation.')
             continue
     return
 
-def broadcast(sock, username):
+def broadcast(sock, username, lst):
     sock.send("Will broadcast your message to all online users.".encode())
     message = sock.recv(BUFFER).decode()
     msg = f"From {username} (broadcast message): {message}"
-    for clientsock in online_clients:
+    for clientsock in lst.values():
         if clientsock != sock:
             clientsock.send(msg.encode())
     sock.send("Finish broadcasting message.".encode())
 
-def private(sock, username, list):
-    online_clients = json.dumps(list)
+def private(sock, username, lst):
+    online_clients = json.dumps(list(lst.keys()))
     sock.send(online_clients.encode())
     target = sock.recv(BUFFER).decode()
     message = sock.recv(BUFFER).decode()
     msg = f"From {username} (private message): {message}"
-    if target in online_clients.keys():
+    if target in lst.keys():
         target_sock = online_clients[target]
         if target_sock != sock:
             target_sock.send(msg.encode())
@@ -147,6 +146,8 @@ if __name__ == '__main__':
         print('Failed to listen.')
         sys.exit()
 
+    lst = {}
+
     while True:
         print(f"Waiting for connections on port {port}")
 
@@ -158,7 +159,7 @@ if __name__ == '__main__':
             sys.exit()
 
         # TODO: initiate a thread for the connected user
-        t = threading.Thread(target = chatroom, args=(newsock,))
+        t = threading.Thread(target = chatroom, args=(newsock, lst))
         t.start()
         
        
