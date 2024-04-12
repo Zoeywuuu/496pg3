@@ -52,7 +52,6 @@ def username(clientsock):
             response = clientsock.recv(BUFFER).decode()
             print(f"response:{response}")
             break
-    return
 
 
 if __name__ == '__main__': 
@@ -85,5 +84,18 @@ if __name__ == '__main__':
 
 
     # TODO: use a loop to handle the operations (i.e., BM, PM, EX)
-    
+    while True:
+        operation = input('Please type in your operation (BM/PM/EX):')
+        clientsock.send(operation.encode())
+        if operation == 'EX':
+            print('Closing the thread...')
+            clientsock.close()
+            break
+        elif operation == 'BM':
+            BM()
+        elif operation == 'PM':
+            PM()
+        else:
+            print('Wrong operation. Please reenter.')
+            continue
 

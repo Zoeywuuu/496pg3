@@ -33,7 +33,18 @@ def chatroom(sock):
         newsock.send("Successfully login!".encode())
 
     # Task2: use a loop to handle the operations (i.e., BM, PM, EX)
-    
+    while True:
+        print("Wait for operation from client.")
+        operation = sock.recv(4).decode()
+        print(f'Operation received: {operation}.')
+        if operation == 'EX':
+            print('Closing the thread...')
+            newsock.close()
+            break
+        elif operation == 'BM':
+            BM()
+        elif operation == 'PM':
+            PM()
     return
 
 def user_name(newsock):
