@@ -30,7 +30,9 @@ Returns:
     None
 Hint: you can use the first character of the message to distinguish different types of message
 """
-def accept_messages():
+def accept_messages(sock):
+    msg = sock.recv(BUFFER).decode()
+    print(msg)
     return
 
 
@@ -98,7 +100,9 @@ if __name__ == '__main__':
 
 
     # TODO: initiate a thread for receiving message
-    
+    recv_thread = threading.Thread(target = accept_messages, args = (clientsock,))
+    recv_thread.start()
+
 
 
     # TODO: use a loop to handle the operations (i.e., BM, PM, EX)
