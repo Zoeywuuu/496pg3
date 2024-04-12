@@ -14,6 +14,7 @@
 import socket
 import threading
 import sys, os, struct
+import json
 
 # Any global variables
 BUFFER =  4096
@@ -53,6 +54,23 @@ def username(clientsock):
             print(f"response:{response}")
             break
 
+def broadcast(sock):
+    ack = sock.recv(BUFFER).decode()
+    print(ack)
+    message = input("Please type in your message to broadcast:")
+    sock.send(message.encode())
+    confirmation = sock.recv(BUFFER).decode()
+    print(confirmation)
+
+def private(sock):
+    online_clients = json.loads(sock.recv(BUFFER).decode())
+    print(f"Online clients usernames: {online_clients.keys()}")
+    target = input("Send your private message to whom:")
+    sock.send(target.encode())
+    message = input("Type in your private message:")
+    sock.send(message.encode())
+    confirmation = sock.recv(BUFFER).decode()
+    print(confirmation)
 
 if __name__ == '__main__': 
     # TODO: Validate input arguments
@@ -92,9 +110,11 @@ if __name__ == '__main__':
             clientsock.close()
             break
         elif operation == 'BM':
-            BM()
+            broadcast(clientsock)
+            continue
         elif operation == 'PM':
-            PM()
+            private(clientsock)
+            continue
         else:
             print('Wrong operation. Please reenter.')
             continue

@@ -12,6 +12,7 @@
 import socket
 import threading
 import sys, os, struct
+import json
 
 # Any global variables
 BUFFER = 4096
@@ -26,11 +27,15 @@ Args:
 Returns:
     None
 """
-def chatroom(sock):
+def chatroom(sock, list):
     print("in chatroom")
     # Task1: login/register the user
-    if user_name(newsock):
+    online = []
+    username = user_name(newsock)
+    if username:
         newsock.send("Successfully login!".encode())
+        online.append(username)
+        print(online)
 
     # Task2: use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
@@ -42,10 +47,39 @@ def chatroom(sock):
             newsock.close()
             break
         elif operation == 'BM':
-            BM()
+            broadcast(sock, username)
+            continue
         elif operation == 'PM':
-            PM()
+            private(sock, username)
+            continue
+        else:
+            print('Wrong operation.')
+            continue
     return
+
+def broadcast(sock, username):
+    sock.send("Will broadcast your message to all online users.".encode())
+    message = sock.recv(BUFFER).decode()
+    msg = f"From {username} (broadcast message): {message}"
+    for clientsock in online_clients:
+        if clientsock != sock:
+            clientsock.send(msg.encode())
+    sock.send("Finish broadcasting message.".encode())
+
+def private(sock, username, list):
+    online_clients = json.dumps(list)
+    sock.send(online_clients.encode())
+    target = sock.recv(BUFFER).decode()
+    message = sock.recv(BUFFER).decode()
+    msg = f"From {username} (private message): {message}"
+    if target in online_clients.keys():
+        target_sock = online_clients[target]
+        if target_sock != sock:
+            target_sock.send(msg.encode())
+        confirmation = f"Successfully send private message to {target}."
+    else:
+        confirmation = "The user does not exist/is offline."
+    sock.send(confirmation.encode())
 
 def user_name(newsock):
     try:
@@ -70,7 +104,7 @@ def user_name(newsock):
                     f.write(f"{username}:{received_password}\n")
                 newsock.send("Create New User".encode())
                 break
-        return True
+        return username
 
     except Exception as e:
         print("Error during name function:", e)
@@ -124,7 +158,9 @@ if __name__ == '__main__':
             sys.exit()
 
         # TODO: initiate a thread for the connected user
-        chatroom(newsock)
+        t = threading.Thread(target = chatroom, args=(newsock,))
+        t.start()
+        
        
 
 
