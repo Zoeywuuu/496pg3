@@ -30,14 +30,49 @@ Returns:
 def chatroom(sock):
     print("in chatroom")
     # Task1: login/register the user
-   
+    user_name(newsock)
 
     # Task2: use a loop to handle the operations (i.e., BM, PM, EX)
     
     return
 
+def user_name(newsock):
+    try:
+        username = newsock.recv(BUFFER).decode()
+        print(f"{username} received.")
+
+        password = check_user(username)
+        received_password = newsock.recv(BUFFER).decode()
+
+        # old user
+        if password:
+            # wrong password
+            if received_password != password:
+                newsock.send("Wrong Password".encode())
+            else:
+                # password match
+                newsock.send("Match successfully!".encode())
+
+        # new user
+        else:
+            with open("user_file.txt", 'a') as f:
+                f.write(f"{username}:{received_password}\n")
+            newsock.send("Create New User".encode())
+
+        newsock.send("Successfully login".encode())
+
+    except Exception as e:
+        print("Error during name function:", e)
+        return False
 
 
+def check_user(username):
+    with open("user_file.txt", "r") as f:
+        for line in f:
+            exist_username, password = line.split()
+            if exist_username == username:
+                return password
+    return None
 
 
 if __name__ == '__main__':
@@ -66,7 +101,6 @@ if __name__ == '__main__':
     except socket.error as e:
         print('Failed to listen.')
         sys.exit()
-
 
     while True:
         print(f"Waiting for connections on port {port}")

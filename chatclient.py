@@ -34,16 +34,29 @@ def accept_messages():
     return
 
 
+def username(clientsock):
+    print("-----enter username funtion-------")
+    # send username to server
+    username = input("Please input the username:")
+    clientsock.send(username.encode())
 
+    # send password to server
+    password = input("Please input the password:")
+    clientsock.send(password.encode())
+
+    # receive the response from server
+    ack = clientsock.recv(BUFFER).decode()
+    print(f"ack: {ack}")
+    response = clientsock.recv(BUFFER).decode()
+    print(f"response:{response}")
 
 
 if __name__ == '__main__': 
     # TODO: Validate input arguments
     hostname = sys.argv[1]
-    port = sys.argv[2]
+    port = int(sys.argv[2])
     host = socket.gethostbyname(hostname)
     sin = (host, port)
-
 
     # TODO: create a socket with UDP or TCP, and connect to the server
     try:
@@ -60,7 +73,7 @@ if __name__ == '__main__':
         sys.exit()
     
     # TODO: Send username to the server and login/register the user
-    
+    username(clientsock)
 
 
     # TODO: initiate a thread for receiving message
