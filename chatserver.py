@@ -1,9 +1,8 @@
 # IS496: Computer Networks (Spring 2022)
 # Programming Assignment 3 - Starter Code
 # Name and Netid of each member:
-# Member 1: 
-# Member 2: 
-# Member 3: 
+# Member 1: Chloe Cai (keyucai2)
+# Member 2: Zeyu Wu (zeyuwu5)
 
 
 # Note: 
@@ -21,7 +20,7 @@ BUFFER = 4096
 
 
 """
-The thread target fuction to handle the requests by a user after a socket connection is established.
+The thread target function to handle the requests by a user after a socket connection is established.
 Args:
     args:  any arguments to be passed to the thread
 Returns:
@@ -30,7 +29,8 @@ Returns:
 def chatroom(sock):
     print("in chatroom")
     # Task1: login/register the user
-    user_name(newsock)
+    if user_name(newsock):
+        newsock.send("Successfully login!".encode())
 
     # Task2: use a loop to handle the operations (i.e., BM, PM, EX)
     
@@ -42,24 +42,24 @@ def user_name(newsock):
         print(f"{username} received.")
 
         password = check_user(username)
-        received_password = newsock.recv(BUFFER).decode()
-
-        # old user
-        if password:
-            # wrong password
-            if received_password != password:
-                newsock.send("Wrong Password".encode())
-            else:
+        while True:
+            received_password = newsock.recv(BUFFER).decode()
+            # old user
+            if password:
+                # wrong password
+                if received_password != password:
+                    newsock.send("Wrong Password! Please type in your password again".encode())
                 # password match
-                newsock.send("Match successfully!".encode())
-
-        # new user
-        else:
-            with open("user_file.txt", 'a') as f:
-                f.write(f"{username}:{received_password}\n")
-            newsock.send("Create New User".encode())
-
-        newsock.send("Successfully login".encode())
+                else:    
+                    newsock.send("Match successfully!".encode())
+                    break
+            # new user
+            else:
+                with open("user_file.txt", 'a') as f:
+                    f.write(f"{username}:{received_password}\n")
+                newsock.send("Create New User".encode())
+                break
+        return True
 
     except Exception as e:
         print("Error during name function:", e)
@@ -69,7 +69,7 @@ def user_name(newsock):
 def check_user(username):
     with open("user_file.txt", "r") as f:
         for line in f:
-            exist_username, password = line.split()
+            exist_username, password = line.strip().split(':')
             if exist_username == username:
                 return password
     return None

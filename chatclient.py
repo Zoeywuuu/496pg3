@@ -1,9 +1,8 @@
 # IS496: Computer Networks (Spring 2022)
 # Programming Assignment 3 - Starter Code
 # Name and Netid of each member:
-# Member 1: 
-# Member 2: 
-# Member 3: 
+# Member 1: Chloe Cai (keyucai2)
+# Member 2: Zeyu Wu (zeyuwu5)
 
 
 
@@ -39,16 +38,21 @@ def username(clientsock):
     # send username to server
     username = input("Please input the username:")
     clientsock.send(username.encode())
+    while True:
+        # send password to server
+        password = input("Please input the password:")
+        clientsock.send(password.encode())
 
-    # send password to server
-    password = input("Please input the password:")
-    clientsock.send(password.encode())
-
-    # receive the response from server
-    ack = clientsock.recv(BUFFER).decode()
-    print(f"ack: {ack}")
-    response = clientsock.recv(BUFFER).decode()
-    print(f"response:{response}")
+        # receive the response from server
+        ack = clientsock.recv(BUFFER).decode()
+        print(f"ack: {ack}")
+        if ack == "Wrong Password! Please type in your password again":
+            continue
+        else:
+            response = clientsock.recv(BUFFER).decode()
+            print(f"response:{response}")
+            break
+    return
 
 
 if __name__ == '__main__': 
