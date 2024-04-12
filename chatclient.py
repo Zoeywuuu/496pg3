@@ -17,7 +17,7 @@ import threading
 import sys, os, struct
 
 # Any global variables
-BUFFER =  
+BUFFER =  4096
 
 
 
@@ -31,7 +31,7 @@ Returns:
 Hint: you can use the first character of the message to distinguish different types of message
 """
 def accept_messages():
-    
+    return
 
 
 
@@ -39,17 +39,25 @@ def accept_messages():
 
 if __name__ == '__main__': 
     # TODO: Validate input arguments
-    
+    hostname = sys.argv[1]
+    port = sys.argv[2]
+    host = socket.gethostbyname(hostname)
+    sin = (host, port)
 
 
     # TODO: create a socket with UDP or TCP, and connect to the server
     try:
-        
+        clientsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     except socket.error as msg:
         print(f'Failed to create socket. Error Code : {str(msg[0])}\n Message: {msg[1]}')
         sys.exit()
     
-
+    try:
+        clientsock.connect(sin)
+    except socket.error as e:
+        print('Failed to connect to the server.')
+        sys.exit()
     
     # TODO: Send username to the server and login/register the user
     

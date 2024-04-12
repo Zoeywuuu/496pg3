@@ -15,7 +15,7 @@ import threading
 import sys, os, struct
 
 # Any global variables
-BUFFER = 
+BUFFER = 4096
 
 
 
@@ -27,12 +27,14 @@ Args:
 Returns:
     None
 """
-def chatroom (args):
+def chatroom(sock):
+    print("in chatroom")
     # Task1: login/register the user
    
 
     # Task2: use a loop to handle the operations (i.e., BM, PM, EX)
     
+    return
 
 
 
@@ -40,10 +42,13 @@ def chatroom (args):
 
 if __name__ == '__main__':
     # TODO: Validate input arguments
-   
+    host = ''
+    port = int(sys.argv[1])
+    sin = (host, port)
 
     # TODO: create a socket in UDP or TCP
     try:
+        serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     except socket.error as e:
         print('Failed to create socket.')
@@ -51,20 +56,30 @@ if __name__ == '__main__':
     
     # TODO: Bind the socket to address
     try:
-        serversock.bind(('', PORT))
+        serversock.bind(sin)
     except socket.error as e:
         print('Failed to bind socket.')
         sys.exit()
 
+    try:
+        serversock.listen()
+    except socket.error as e:
+        print('Failed to listen.')
+        sys.exit()
+
 
     while True:
-        print(f"Waiting for connections on port {PORT}")
+        print(f"Waiting for connections on port {port}")
 
         # TODO: handle any incoming connection with UDP or TCP
-
+        try:
+            newsock, client_address = serversock.accept()
+        except socket.error as e:
+            print('Failed to accept the connection.')
+            sys.exit()
 
         # TODO: initiate a thread for the connected user
-        
+        chatroom(newsock)
        
 
 
