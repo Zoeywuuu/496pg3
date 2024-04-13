@@ -27,18 +27,17 @@ Args:
 Returns:
     None
 """
-def chatroom(sock, lst):
+def chatroom(newsock, lst):
     print("in chatroom")
     # Task1: login/register the user
-    username = user_name(newsock)
-    if username:
-        newsock.send("Successfully login!".encode())
-        lst[username] = sock
+    username = handle_login(newsock)
+    newsock.send("Successfully login!".encode())
+    lst[username] = newsock
 
     # Task2: use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
         print("Wait for operation from client.")
-        operation = sock.recv(4).decode()
+        operation = newsock.recv(4).decode()
         print(f'Operation received: {operation}.')
         if operation == 'EX':
             lst.pop(username)
@@ -46,41 +45,41 @@ def chatroom(sock, lst):
             newsock.close()
             break
         elif operation == 'BM':
-            broadcast(sock, username, lst)
+            broadcast(newsock, username, lst)
             continue
         elif operation == 'PM':
-            private(sock, username, lst)
+            private(newsock, username, lst)
             continue
         else:
             print('Wrong operation.')
             continue
     return
 
-def broadcast(sock, username, lst):
-    sock.send("Will broadcast your message to all online users.".encode())
-    message = sock.recv(BUFFER).decode()
+def broadcast(newsock, username, lst):
+    newsock.send("Will broadcast your message to all online users.".encode())
+    message = newsock.recv(BUFFER).decode()
     msg = f"From {username} (broadcast message): {message}"
     for clientsock in lst.values():
-        if clientsock != sock:
+        if clientsock != newsock:
             clientsock.send(msg.encode())
-    sock.send("Finish broadcasting message.".encode())
+    newsock.send("Finish broadcasting message.".encode())
 
-def private(sock, username, lst):
+def private(newsock, username, lst):
     online_clients = json.dumps(list(lst.keys()))
-    sock.send(online_clients.encode())
-    target = sock.recv(BUFFER).decode()
-    message = sock.recv(BUFFER).decode()
+    newsock.send(online_clients.encode())
+    target = newsock.recv(BUFFER).decode()
+    message = newsock.recv(BUFFER).decode()
     msg = f"From {username} (private message): {message}"
     if target in lst.keys():
         target_sock = online_clients[target]
-        if target_sock != sock:
+        if target_sock != newsock:
             target_sock.send(msg.encode())
         confirmation = f"Successfully send private message to {target}."
     else:
         confirmation = "The user does not exist/is offline."
-    sock.send(confirmation.encode())
+    newsock.send(confirmation.encode())
 
-def user_name(newsock):
+def handle_login(newsock):
     try:
         username = newsock.recv(BUFFER).decode()
         print(f"{username} received.")
@@ -103,6 +102,7 @@ def user_name(newsock):
                     f.write(f"{username}:{received_password}\n")
                 newsock.send("Create New User".encode())
                 break
+        print(f"conn established with username {username}")
         return username
 
     except Exception as e:
@@ -161,6 +161,7 @@ if __name__ == '__main__':
         # TODO: initiate a thread for the connected user
         t = threading.Thread(target = chatroom, args=(newsock, lst))
         t.start()
+        # print(f"start a new thread to handle request from {newsock}")
         
        
 

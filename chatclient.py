@@ -56,22 +56,22 @@ def username(clientsock):
             print(f"response:{response}")
             break
 
-def broadcast(sock):
-    ack = sock.recv(BUFFER).decode()
+def broadcast(clientsock):
+    ack = clientsock.recv(BUFFER).decode()
     print(ack)
     message = input("Please type in your message to broadcast:")
-    sock.send(message.encode())
-    confirmation = sock.recv(BUFFER).decode()
+    clientsock.send(message.encode())
+    confirmation = clientsock.recv(BUFFER).decode()
     print(confirmation)
 
-def private(sock):
-    online_clients = json.loads(sock.recv(BUFFER).decode())
+def private(clientsock):
+    online_clients = json.loads(clientsock.recv(BUFFER).decode())
     print(f"Online clients usernames: {online_clients.keys()}")
     target = input("Send your private message to whom:")
-    sock.send(target.encode())
+    clientsock.send(target.encode())
     message = input("Type in your private message:")
-    sock.send(message.encode())
-    confirmation = sock.recv(BUFFER).decode()
+    clientsock.send(message.encode())
+    confirmation = clientsock.recv(BUFFER).decode()
     print(confirmation)
 
 if __name__ == '__main__': 
@@ -115,11 +115,8 @@ if __name__ == '__main__':
             break
         elif operation == 'BM':
             broadcast(clientsock)
-            continue
         elif operation == 'PM':
             private(clientsock)
-            continue
         else:
             print('Wrong operation. Please reenter.')
-            continue
 
