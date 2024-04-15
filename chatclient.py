@@ -30,14 +30,19 @@ Returns:
     None
 Hint: you can use the first character of the message to distinguish different types of message
 """
-def accept_messages(sock):
+def accept_messages(clientsock):
+    global MESSAGE
     try:
         while True:
             msg_received = clientsock.recv(BUFFER).decode()
+            print(msg_received)
             if msg_received.startswith("From"):
                 print(msg_received)
                 print(prompt, end='')
-
+            elif isinstance(msg_received, list):
+                MESSAGE.append(msg_received)
+                print(MESSAGE)
+                # print('3')
                 # if msg_type == "BM":
                 #     print("Broadcast Message:", message)
                 # elif msg_type == "PM":
@@ -46,7 +51,6 @@ def accept_messages(sock):
                 #     print("Server has closed the connection.")
                 #     break
             else:
-                # MESSAGE.append(msg_received)
                 continue
     except Exception as e:
         print("Error in accept_messages:", e)
@@ -85,15 +89,16 @@ def broadcast(clientsock):
     return True
 
 def private(clientsock):
+    MESSAGE = []
     print("----Enter private function-----")
-    online_clients = json.loads(clientsock.recv(BUFFER).decode())
-    print(f"Online clients usernames: {online_clients.keys()}")
+    print(MESSAGE)
+    # print('2')
     target = input("Send your private message to whom:")
     clientsock.send(target.encode())
     message = input("Type in your private message:")
     clientsock.send(message.encode())
-    confirmation = clientsock.recv(BUFFER).decode()
-    print(confirmation)
+    # confirmation = clientsock.recv(BUFFER).decode()
+    # print(confirmation)
 
 
 if __name__ == '__main__': 
@@ -130,6 +135,7 @@ if __name__ == '__main__':
     while True:
         prompt = 'Please type in your operation (BM/PM/EX):\n'
         operation = input(prompt)
+
         clientsock.send(operation.encode())
         if operation == 'EX':
             print('Closing the thread...')

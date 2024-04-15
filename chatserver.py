@@ -56,13 +56,13 @@ def chatroom(newsock, lst):
     return
 
 def broadcast(newsock, username, lst):
-    newsock.send("Will broadcast your message to all online users.".encode())
+    # newsock.send("Will broadcast your message to all online users.".encode())
     message = newsock.recv(BUFFER).decode()
     msg = f"From {username} (broadcast message): {message}"
     for clientsock in lst.values():
         if clientsock != newsock:
             clientsock.send(msg.encode())
-    newsock.send("Finish broadcasting message.".encode())
+    # newsock.send("Finish broadcasting message.".encode())
 
 def private(newsock, username, lst):
     print("-----enter private function------")
@@ -74,13 +74,13 @@ def private(newsock, username, lst):
     message = newsock.recv(BUFFER).decode()
     msg = f"From {username} (private message): {message}"
     if target in lst.keys():
-        target_sock = online_clients[target]
+        target_sock = lst[target]
         if target_sock != newsock:
             target_sock.send(msg.encode())
-        confirmation = f"Successfully send private message to {target}."
-    else:
-        confirmation = "The user does not exist/is offline."
-    newsock.send(confirmation.encode())
+    #     confirmation = f"Successfully send private message to {target}."
+    # else:
+    #     confirmation = "The user does not exist/is offline."
+    # newsock.send(confirmation.encode())
 
 def handle_login(newsock):
     try:
