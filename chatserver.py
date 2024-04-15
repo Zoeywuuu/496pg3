@@ -46,13 +46,13 @@ def chatroom(newsock, lst):
             break
         elif operation == 'BM':
             broadcast(newsock, username, lst)
-            continue
+            # continue
         elif operation == 'PM':
             private(newsock, username, lst)
-            continue
+            # continue
         else:
             print('Wrong operation.')
-            continue
+            # continue
     return
 
 def broadcast(newsock, username, lst):
@@ -65,7 +65,10 @@ def broadcast(newsock, username, lst):
     newsock.send("Finish broadcasting message.".encode())
 
 def private(newsock, username, lst):
+    print("-----enter private function------")
     online_clients = json.dumps(list(lst.keys()))
+    print(online_clients)
+
     newsock.send(online_clients.encode())
     target = newsock.recv(BUFFER).decode()
     message = newsock.recv(BUFFER).decode()

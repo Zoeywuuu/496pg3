@@ -31,9 +31,28 @@ Returns:
 Hint: you can use the first character of the message to distinguish different types of message
 """
 def accept_messages(sock):
-    msg = sock.recv(BUFFER).decode()
-    print(msg)
-    return
+    try:
+        while True:
+            msg_received = clientsock.recv(BUFFER).decode()
+            if msg_received.startswith("From"):
+                print(msg_received)
+                print(prompt, end='')
+
+                # if msg_type == "BM":
+                #     print("Broadcast Message:", message)
+                # elif msg_type == "PM":
+                #     print("Private Message:", message)
+                # elif msg_type == "EX":
+                #     print("Server has closed the connection.")
+                #     break
+            else:
+                # MESSAGE.append(msg_received)
+                continue
+    except Exception as e:
+        print("Error in accept_messages:", e)
+    finally:
+        clientsock.close()
+    return True
 
 
 def username(clientsock):
@@ -57,14 +76,16 @@ def username(clientsock):
             break
 
 def broadcast(clientsock):
-    ack = clientsock.recv(BUFFER).decode()
-    print(ack)
+    # ack = clientsock.recv(BUFFER).decode()
+    # print(ack)
     message = input("Please type in your message to broadcast:")
     clientsock.send(message.encode())
-    confirmation = clientsock.recv(BUFFER).decode()
-    print(confirmation)
+    # confirmation = clientsock.recv(BUFFER).decode()
+    # print(confirmation)
+    return True
 
 def private(clientsock):
+    print("----Enter private function-----")
     online_clients = json.loads(clientsock.recv(BUFFER).decode())
     print(f"Online clients usernames: {online_clients.keys()}")
     target = input("Send your private message to whom:")
@@ -73,6 +94,7 @@ def private(clientsock):
     clientsock.send(message.encode())
     confirmation = clientsock.recv(BUFFER).decode()
     print(confirmation)
+
 
 if __name__ == '__main__': 
     # TODO: Validate input arguments
@@ -104,10 +126,10 @@ if __name__ == '__main__':
     recv_thread.start()
 
 
-
     # TODO: use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
-        operation = input('Please type in your operation (BM/PM/EX):')
+        prompt = 'Please type in your operation (BM/PM/EX):\n'
+        operation = input(prompt)
         clientsock.send(operation.encode())
         if operation == 'EX':
             print('Closing the thread...')
@@ -119,4 +141,8 @@ if __name__ == '__main__':
             private(clientsock)
         else:
             print('Wrong operation. Please reenter.')
+
+    clientsock.close()
+    sys.exit()
+
 
