@@ -17,7 +17,8 @@ import sys, os, struct
 import json
 
 # Any global variables
-BUFFER =  4096
+BUFFER = 4096
+MESSAGE = []
 
 
 
@@ -31,27 +32,29 @@ Returns:
 Hint: you can use the first character of the message to distinguish different types of message
 """
 def accept_messages(clientsock):
-    global MESSAGE
     try:
         while True:
             msg_received = clientsock.recv(BUFFER).decode()
-            print(msg_received)
+            # print(msg_received)
             if msg_received.startswith("From"):
                 print(msg_received)
                 print(prompt, end='')
-            elif isinstance(msg_received, list):
-                MESSAGE.append(msg_received)
-                print(MESSAGE)
-                # print('3')
-                # if msg_type == "BM":
-                #     print("Broadcast Message:", message)
-                # elif msg_type == "PM":
-                #     print("Private Message:", message)
-                # elif msg_type == "EX":
-                #     print("Server has closed the connection.")
-                #     break
+            elif msg_received.startswith('USER_LIST'):
+                online_users = json.loads(msg_received[9:])
+                print("\nOnline Users:", online_users)
+            elif int(msg_received) == -1:
+                print('The user does not exist. Failure in sending private msg.')
+                print(prompt, end='')
+            elif int(msg_received) == -2:
+                print('Please choose another user instead of yourself.')
+                print(prompt, end='')
+            elif int(msg_received) == 1:
+                print('Successfully sent.')
+                print(prompt, end='')
+
             else:
                 continue
+
     except Exception as e:
         print("Error in accept_messages:", e)
     finally:
@@ -79,29 +82,24 @@ def username(clientsock):
             print(f"response:{response}")
             break
 
+
 def broadcast(clientsock):
-    # ack = clientsock.recv(BUFFER).decode()
-    # print(ack)
     message = input("Please type in your message to broadcast:")
     clientsock.send(message.encode())
-    # confirmation = clientsock.recv(BUFFER).decode()
-    # print(confirmation)
     return True
 
+
 def private(clientsock):
-    MESSAGE = []
     print("----Enter private function-----")
-    print(MESSAGE)
-    # print('2')
     target = input("Send your private message to whom:")
+
     clientsock.send(target.encode())
     message = input("Type in your private message:")
     clientsock.send(message.encode())
-    # confirmation = clientsock.recv(BUFFER).decode()
-    # print(confirmation)
 
 
-if __name__ == '__main__': 
+
+if __name__ == '__main__':
     # TODO: Validate input arguments
     hostname = sys.argv[1]
     port = int(sys.argv[2])

@@ -55,6 +55,7 @@ def chatroom(newsock, lst):
             # continue
     return
 
+
 def broadcast(newsock, username, lst):
     # newsock.send("Will broadcast your message to all online users.".encode())
     message = newsock.recv(BUFFER).decode()
@@ -64,23 +65,37 @@ def broadcast(newsock, username, lst):
             clientsock.send(msg.encode())
     # newsock.send("Finish broadcasting message.".encode())
 
+
 def private(newsock, username, lst):
     print("-----enter private function------")
-    online_clients = json.dumps(list(lst.keys()))
+    online_users = json.dumps(list(lst.keys()))
+    online_clients = 'USER_LIST' + online_users
     print(online_clients)
 
     newsock.send(online_clients.encode())
     target = newsock.recv(BUFFER).decode()
+    # if target not in online_users:
+    #     print('The user does not exist.')
+    #     ack = b'-1'
+    # else:
+    #     ack = b'1'
+    # newsock.send(ack)
     message = newsock.recv(BUFFER).decode()
     msg = f"From {username} (private message): {message}"
     if target in lst.keys():
         target_sock = lst[target]
         if target_sock != newsock:
             target_sock.send(msg.encode())
-    #     confirmation = f"Successfully send private message to {target}."
-    # else:
-    #     confirmation = "The user does not exist/is offline."
-    # newsock.send(confirmation.encode())
+            ack = b'1'
+            print('Successfully sent.')
+        else:
+            ack = b'-2'
+            print('Please choose another user instead of the client self.')
+    else:
+        ack = b'-1'
+        print('The user does not exist.')
+    newsock.send(ack)
+
 
 def handle_login(newsock):
     try:
