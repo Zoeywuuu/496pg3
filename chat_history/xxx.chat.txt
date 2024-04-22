@@ -1,0 +1,5 @@
+*** chat history of xxx ***
+2024-04-22 01:11:21 BM From xxx (broadcast message): 123
+2024-04-22 01:15:34 BM From xxx (broadcast message): YOUYOU
+2024-04-22 01:23:16 BM From xxx (broadcast message): new msg
+2024-04-22 01:34:19 BM From xxx (broadcast message): 456

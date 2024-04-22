@@ -9,14 +9,18 @@
 # This starter code is optional. Feel free to develop your own solution. 
 
 # Import any necessary libraries below
+import logging
 import socket
 import threading
 import sys, os, struct
 import json
+import time
+
 from pg3lib import *
 
 # Any global variables
 BUFFER = 4096
+CHAT_HISTORY_DIR = "chat_history"
 
 
 
@@ -51,6 +55,8 @@ def chatroom(newsock, lst):
         elif operation == 'PM':
             private(newsock, username, lst)
             # continue
+        elif operation == 'CH':
+            history(newsock, username)
         else:
             print('Wrong operation.')
             # continue
@@ -61,6 +67,10 @@ def broadcast(newsock, username, lst):
     # newsock.send("Will broadcast your message to all online users.".encode())
     message = newsock.recv(BUFFER).decode()
     msg = f"From {username} (broadcast message): {message}"
+    timestamp = time.time()
+    write_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(timestamp)))
+    write_msg = str(write_time + ' BM ' + msg)
+    write_history(username, write_msg)
     for clientsock in lst.values():
         if clientsock != newsock:
             clientsock.send(msg.encode())
@@ -75,12 +85,7 @@ def private(newsock, username, lst):
 
     newsock.send(online_clients.encode())
     target = newsock.recv(BUFFER).decode()
-    # if target not in online_users:
-    #     print('The user does not exist.')
-    #     ack = b'-1'
-    # else:
-    #     ack = b'1'
-    # newsock.send(ack)
+
     message = newsock.recv(BUFFER).decode()
     msg = f"From {username} (private message): {message}"
     if target in lst.keys():
@@ -89,6 +94,12 @@ def private(newsock, username, lst):
             target_sock.send(msg.encode())
             ack = b'1'
             print('Successfully sent.')
+            timestamp = time.time()
+            write_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(timestamp)))
+            print(write_time)
+            write_msg = str(write_time + 'PM' + msg + 'to' + target)
+            print(write_msg)
+            write_history(username, write_msg)
         else:
             ack = b'-2'
             print('Please choose another user instead of the client self.')
@@ -123,6 +134,9 @@ def handle_login(newsock):
             else:
                 with open("user_file.txt", 'a') as f:
                     f.write(f"{username}:{received_password}\n")
+                chat_history_file = os.path.join(CHAT_HISTORY_DIR, f"{username}.chat.txt")
+                with open(chat_history_file,'a') as f2:
+                    f2.write(f"*** chat history of {username} ***\n")
                 newsock.send("Create New User".encode())
                 break
         print(f"conn established with username {username}")
@@ -142,12 +156,48 @@ def check_user(username):
     return None
 
 
+def history(newsock,username):
+    try:
+        chat_history_file = os.path.join(CHAT_HISTORY_DIR, f"{username}.chat.txt")
+        print(chat_history_file)
+        if os.path.exists(chat_history_file):
+            with open(chat_history_file, 'r') as f:
+                chat_history = f.readlines()
+                logging.info("start sending history")
+                for line in chat_history:
+                    # print(line)
+                    logging.info(line)
+                    newsock.send(line.encode())
+                logging.info("end sending history")
+        newsock.send("&&& History_End &&&".encode())
+
+
+    except Exception as e:
+        print("Error sending history:", e)
+
+
+
+
+def write_history(username, write_msg):
+    chat_history_file = os.path.join(CHAT_HISTORY_DIR, f"{username}.chat.txt")
+    if os.path.exists(chat_history_file):
+        print('qqqqq')
+        with open(chat_history_file, 'a') as f:
+            f.write(f"{write_msg}\n")
+    else:
+        print('222No chat history existed.')
+
+
+
+
+
+
 if __name__ == '__main__':
     # TODO: Validate input arguments
     host = ''
     port = int(sys.argv[1])
     sin = (host, port)
-
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     # TODO: create a socket in UDP or TCP
     try:
         serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

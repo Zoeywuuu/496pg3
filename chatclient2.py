@@ -34,16 +34,31 @@ Returns:
 Hint: you can use the first character of the message to distinguish different types of message
 """
 def accept_messages(clientsock):
-    # public_key = None
     try:
         while True:
             msg_received = clientsock.recv(BUFFER).decode()
+            print("received msg :", msg_received)
             if msg_received.startswith("From"):
                 print(msg_received)
                 print(prompt, end='')
+
             elif msg_received.startswith('USER_LIST'):
                 online_users = json.loads(msg_received[9:])
                 print("\nOnline Users:", online_users)
+
+            elif msg_received.startswith("***"):
+                history_msgs = []
+                while True:
+                    history_msg = clientsock.recv(BUFFER).decode()
+                    if history_msg.endswith("&&&"):
+                        break
+                    history_msgs.append(history_msg)
+                print("start printing history")
+                for msg in history_msgs:
+                    print(msg)
+                print("-----")
+                print(prompt, end='')
+
             elif int(msg_received) == -1:
                 print('The user does not exist. Failure in sending private msg.')
                 print(prompt, end='')
@@ -53,6 +68,7 @@ def accept_messages(clientsock):
             elif int(msg_received) == 1:
                 print('Successfully sent.')
                 print(prompt, end='')
+
             else:
                 continue
     except Exception as e:
@@ -60,6 +76,7 @@ def accept_messages(clientsock):
     finally:
         clientsock.close()
     return True
+
 
 
 def username(clientsock):
@@ -99,6 +116,18 @@ def private(clientsock):
     message = input("Type in your private message:")
     clientsock.send(message.encode())
 
+# def history(clientsock):
+#     print("chat history")
+#     history_msgs = []
+#     while True:
+#         history_msg = clientsock.recv(BUFFER).decode()
+#         if history_msg.startswith("&&&"):
+#             break
+#         history_msgs.append(history_msg)
+#     for msg in history_msgs:
+#         print(msg)
+
+
 
 
 if __name__ == '__main__':
@@ -133,7 +162,7 @@ if __name__ == '__main__':
 
     # TODO: use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
-        prompt = 'Please type in your operation (BM/PM/EX):\n'
+        prompt = 'Please type in your operation (BM/PM/EX/CH):\n'
         operation = input(prompt)
 
         clientsock.send(operation.encode())
@@ -145,8 +174,12 @@ if __name__ == '__main__':
             broadcast(clientsock)
         elif operation == 'PM':
             private(clientsock)
+        elif operation == 'CH':
+            operation = 'CH'
+
         else:
             print('Wrong operation. Please reenter.')
+
 
     clientsock.close()
     sys.exit()
