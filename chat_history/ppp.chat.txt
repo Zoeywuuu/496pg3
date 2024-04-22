@@ -1,6 +1,0 @@
-*** chat history of ppp ***
-2024-04-22 13:30:24 BM From ppp (broadcast message): DDDDDD
-2024-04-22 13:30:48 BM From ppp (broadcast message): JJJJ
-2024-04-22 13:35:00 BM From ppp (broadcast message): TUTUUTUTUTUTUTUT
-2024-04-22 13:37:28 BM From ppp (broadcast message): QQQQQQ
-2024-04-22 13:38:13 BM From ppp (broadcast message): YOU

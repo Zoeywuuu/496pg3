@@ -165,7 +165,7 @@ def history(newsock,username):
                 chat_history = f.readlines()
                 # logging.info("start sending history")
                 for line in chat_history:
-                    print(line)
+                    # print(line)
                     # logging.info(line)
                     newsock.send(line.encode())
                 # logging.info("end sending history")
@@ -186,9 +186,6 @@ def write_history(username, write_msg):
             f.write(f"{write_msg}\n")
     else:
         print('222No chat history existed.')
-
-
-
 
 
 

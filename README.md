@@ -107,6 +107,8 @@ Closing the thread...
 To test extra credits, please run the chatserver2.py on student machine 01,
 and run the chatclient2.py in other student machines
 
+ Attention: please create new users for test CH function
+
 ******CH FUNCTION******
 
 client side:
