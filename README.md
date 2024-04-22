@@ -107,19 +107,22 @@ Closing the thread...
 To test extra credits, please run the chatserver2.py on student machine 01,
 and run the chatclient2.py in other student machines
 
- Attention: please create new users for test CH function
+ Attention: please create new users for test CH function and please wait for a while to enter CH
 
 ******CH FUNCTION******
 
 client side:
 start printing history
-*** chat history of ppp ***
 
-2024-04-22 13:30:24 BM From ppp (broadcast message): DDDDDD
-2024-04-22 13:30:48 BM From ppp (broadcast message): JJJJ
-2024-04-22 13:35:00 BM From ppp (broadcast message): TUTUUTUTUTUTUTUT
+2024-04-22 13:30:24 BM From aaa (broadcast message): test
+2024-04-22 13:30:48 BM From aaa (broadcast message): test2
+2024-04-22 13:35:00 BM From aaa(broadcast message): 33333
 
 -----
 
 server side:
+
+Wait for operation from client.
+Operation received: CH.
+
 

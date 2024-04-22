@@ -53,12 +53,15 @@ def accept_messages(clientsock):
                     history_msg = clientsock.recv(BUFFER).decode()
                     if history_msg.endswith("&&&"):
                         break
-                    history_msgs.append(history_msg)
-                    print("start printing history")
-                    for msg in history_msgs:
-                        print(msg)
-                    print("-----")
-                    print(prompt, end='')
+                    else:
+                        history_msgs.append(history_msg)
+
+                print("start printing history")
+                for msg in history_msgs:
+                    print(msg)
+                print("-----")
+                print(prompt, end='')
+
 
             elif int(msg_received) == -1:
                 print('The user does not exist. Failure in sending private msg.')
