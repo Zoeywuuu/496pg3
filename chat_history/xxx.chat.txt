@@ -3,3 +3,6 @@
 2024-04-22 01:15:34 BM From xxx (broadcast message): YOUYOU
 2024-04-22 01:23:16 BM From xxx (broadcast message): new msg
 2024-04-22 01:34:19 BM From xxx (broadcast message): 456
+2024-04-22 13:40:27 BM From xxx (broadcast message): DDDDDDDDDD
+2024-04-22 13:41:24 BM From xxx (broadcast message): DOG
+2024-04-22 13:41:47 BM From xxx (broadcast message): CAT

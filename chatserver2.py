@@ -159,14 +159,14 @@ def check_user(username):
 def history(newsock,username):
     try:
         chat_history_file = os.path.join(CHAT_HISTORY_DIR, f"{username}.chat.txt")
-        print(chat_history_file)
+        # print(chat_history_file)
         if os.path.exists(chat_history_file):
             with open(chat_history_file, 'r') as f:
                 chat_history = f.readlines()
                 # logging.info("start sending history")
                 for line in chat_history:
-                    # print(line)
-                    logging.info(line)
+                    print(line)
+                    # logging.info(line)
                     newsock.send(line.encode())
                 # logging.info("end sending history")
         newsock.send("&&& History_End &&&".encode())
@@ -181,7 +181,7 @@ def history(newsock,username):
 def write_history(username, write_msg):
     chat_history_file = os.path.join(CHAT_HISTORY_DIR, f"{username}.chat.txt")
     if os.path.exists(chat_history_file):
-        print('qqqqq')
+        # print('qqqqq')
         with open(chat_history_file, 'a') as f:
             f.write(f"{write_msg}\n")
     else:

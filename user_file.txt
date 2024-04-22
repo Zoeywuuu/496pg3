@@ -16,3 +16,6 @@ kkk:jjj
 uuu:ooo
 CH:DDDD
 xxx:yyy
+rrr:ttt
+ppp:qqq
+yyy:zzz

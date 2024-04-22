@@ -63,7 +63,7 @@ def accept_messages(clientsock):
 
 
 def username(clientsock):
-    print("-----enter username funtion-------")
+    print("-----enter username function-------")
     # send username to server
     username = input("Please input the username:")
     clientsock.send(username.encode())

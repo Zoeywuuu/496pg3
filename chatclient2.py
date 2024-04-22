@@ -37,7 +37,7 @@ def accept_messages(clientsock):
     try:
         while True:
             msg_received = clientsock.recv(BUFFER).decode()
-            print("received msg :", msg_received)
+            # print("received msg :", msg_received)
             if msg_received.startswith("From"):
                 print(msg_received)
                 print(prompt, end='')
@@ -48,16 +48,17 @@ def accept_messages(clientsock):
 
             elif msg_received.startswith("***"):
                 history_msgs = []
+
                 while True:
                     history_msg = clientsock.recv(BUFFER).decode()
                     if history_msg.endswith("&&&"):
                         break
                     history_msgs.append(history_msg)
-                print("start printing history")
-                for msg in history_msgs:
-                    print(msg)
-                print("-----")
-                print(prompt, end='')
+                    print("start printing history")
+                    for msg in history_msgs:
+                        print(msg)
+                    print("-----")
+                    print(prompt, end='')
 
             elif int(msg_received) == -1:
                 print('The user does not exist. Failure in sending private msg.')
