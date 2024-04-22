@@ -9,7 +9,7 @@
 # This starter code is optional. Feel free to develop your own solution. 
 
 # Import any necessary libraries below
-import logging
+# import logging
 import socket
 import threading
 import sys, os, struct
@@ -163,12 +163,12 @@ def history(newsock,username):
         if os.path.exists(chat_history_file):
             with open(chat_history_file, 'r') as f:
                 chat_history = f.readlines()
-                logging.info("start sending history")
+                # logging.info("start sending history")
                 for line in chat_history:
                     # print(line)
                     logging.info(line)
                     newsock.send(line.encode())
-                logging.info("end sending history")
+                # logging.info("end sending history")
         newsock.send("&&& History_End &&&".encode())
 
 
@@ -197,7 +197,7 @@ if __name__ == '__main__':
     host = ''
     port = int(sys.argv[1])
     sin = (host, port)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+    # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     # TODO: create a socket in UDP or TCP
     try:
         serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
